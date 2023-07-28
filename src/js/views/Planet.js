@@ -549,19 +549,19 @@ class Planet {
     this.temperatureMap.render({
       resolution: this.resolution,
       heightMaps: this.heightMaps,
-      pole1Factor: genSetting.pole1Factor,
-      pole2Factor: genSetting.pole2Factor,
-      heightFactor: genSetting.heightFactor,
-      iciness: genSetting.iciness
+      pole1Factor: genSetting.temperatureMap.pole1Factor,
+      pole2Factor: genSetting.temperatureMap.pole2Factor,
+      heightFactor: genSetting.temperatureMap.heightFactor,
+      iciness: genSetting.temperatureMap.iciness
     })
   }
 
   renderTextureMap(genSetting) {
     this.textureMap.render({
       resolution: this.resolution,
-      heightMaps: this.heightMaps,
-      moistureMaps: this.moistureMaps,
-      biomeMap: this.biome.texture,
+      yIndexMap: this.heightMaps,
+      xIndexMap: this.moistureMaps,
+      colorMap: this.biome.texture,
       temperatureMaps: this.temperatureMaps,
       iceCutoff: genSetting.iceCutoff
     });

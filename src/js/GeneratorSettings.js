@@ -9,16 +9,25 @@ class GeneratorSettings {
         this.seed = this.randRange(0, 1) * 1000.0;
 
         this.waterLevel = this.randRange(genData.waterLevel.min, genData.waterLevel.max);
-
-        //temperature map settings
-        this.pole1Factor = this.randRange(genData.pole1Factor.min, genData.pole1Factor.max);
-        this.pole2Factor = this.randRange(genData.pole2Factor.min, genData.pole2Factor.max);
-        this.heightFactor = this.randRange(genData.heightFactor.min, genData.heightFactor.max);
-        this.iciness = this.randRange(genData.iciness.min, genData.iciness.max);
-        this.iceCutoff = this.randRange(genData.iceCutoff.min, genData.iceCutoff.max);
+        this.waterColorH = this.randRange(genData.waterColor.hMin, genData.waterColor.hMax);
+        this.waterColorS = this.randRange(genData.waterColor.sMin, genData.waterColor.sMax);
+        this.waterColorL = this.randRange(genData.waterColor.lMin, genData.waterColor.lMax);
+        this.waterColor = new THREE.Color().setHSL(this.waterColorH, this.waterColorS, this.waterColorL);
         this.isJewel = genData.isJewel;
 
-        //height map settings
+        this.setHeightMapSettings(genData);
+        this.setMoistureMapSettings(genData);
+        this.setTemperatureMapSettings(genData);
+
+        this.setCloudMapSettings(genData);
+
+        if (this.isJewel == true)
+            this.moistureMap.resMix = 0;
+
+        this.setBiomeMapSettings(genData);
+    }
+
+    setHeightMapSettings(genData) {
         this.heightMap = {
             res1: this.randRange(genData.heightMap.resMin, genData.heightMap.resMax),
             res2: this.randRange(genData.heightMap.resMin, genData.heightMap.resMax),
@@ -26,8 +35,9 @@ class GeneratorSettings {
             mixScale: this.randRange(genData.heightMap.mixScaleMin, genData.heightMap.mixScaleMax),
             doesRidged: Math.floor(this.randRange(genData.heightMap.doesRidgedMin, genData.heightMap.doesRidgedMax))
         }
+    }
 
-        //moisture map settings
+    setMoistureMapSettings(genData) {
         this.moistureMap = {
             res1: this.randRange(genData.moistureMap.resMin, genData.moistureMap.resMax),
             res2: this.randRange(genData.moistureMap.resMin, genData.moistureMap.resMax),
@@ -35,17 +45,28 @@ class GeneratorSettings {
             mixScale: this.randRange(genData.moistureMap.mixScaleMin, genData.moistureMap.mixScaleMax),
             doesRidged: Math.floor(this.randRange(genData.moistureMap.doesRidgedMin, genData.moistureMap.doesRidgedMax))
         }
+    }
 
+    setTemperatureMapSettings(genData) {
+        this.temperatureMap = {
+            pole1Factor: this.randRange(genData.pole1Factor.min, genData.pole1Factor.max),
+            pole2Factor: this.randRange(genData.pole2Factor.min, genData.pole2Factor.max),
+            heightFactor: this.randRange(genData.heightFactor.min, genData.heightFactor.max),
+            iciness: this.randRange(genData.iciness.min, genData.iciness.max),
+            iceCutoff: this.randRange(genData.iceCutoff.min, genData.iceCutoff.max)
+        }
+    }
+
+    setCloudMapSettings(genData) {
         this.cloudMap = {
             res1: this.randRange(0.1, 1.0),
             res2: this.randRange(0.1, 1.0),
             resMix: this.randRange(0.1, 1.0),
             mixScale: this.randRange(0.1, 1.0)
         }
+    }
 
-        if (this.isJewel == true)
-            this.moistureMap.resMix = 0;
-
+    setBiomeMapSettings(genData) {
         //biome map settings
         this.paletteNum = 0;
         this.colorPalette = genData.colorPalette;
@@ -53,12 +74,7 @@ class GeneratorSettings {
         this.baseColor2 = this.randomColor();
         this.inlandColor = this.randomColor();
         this.beachColor = this.randomColor();
-
-        this.waterColorH = this.randRange(genData.waterColor.hMin, genData.waterColor.hMax);
-        this.waterColorS = this.randRange(genData.waterColor.sMin, genData.waterColor.sMax);
-        this.waterColorL = this.randRange(genData.waterColor.lMin, genData.waterColor.lMax);
-        this.waterColor = new THREE.Color().setHSL(this.waterColorH, this.waterColorS, this.waterColorL);
-
+    
         let biomeWidth = 512, biomeHeight = 512;
         this.baseGradientArr = new Array();
         for (let i = 0; i < 5; i++) {
@@ -67,7 +83,7 @@ class GeneratorSettings {
                 x2: this.randRange(0, biomeWidth), y2: this.randRange(0, biomeHeight)
             }
         }
-
+    
         this.circleSize = this.randRange(30, 250);
         this.circleNum = 100;
         this.circleArr = new Array();
@@ -77,7 +93,7 @@ class GeneratorSettings {
                 x: this.randRange(0, biomeWidth), y: this.randRange(0, biomeHeight) - biomeHeight * this.waterLevel
             }
         }
-
+    
         this.inlandSize = 100;
         this.landDetail = Math.round(this.randRange(0, 5));
         this.landDetailArr = new Array();
@@ -154,28 +170,28 @@ class GeneratorSettings {
 
         //ice controls
         this.iceControls = this.generationControls.addFolder('Ice Controls');
-        this.pole1FactorControl = this.iceControls.add(this, "pole1Factor", 0.0, 5.0);
+        this.pole1FactorControl = this.iceControls.add(this.temperatureMap, "pole1Factor", 0.0, 5.0);
         this.pole1FactorControl.onChange(value => {
             if (planet.genSettingsChanged != true) {
                 planet.renderTemperatureMap(this); planet.renderTextureMap(this); planet.renderNormalMap(this);
                 planet.genSettingsChanged = true;
             }
         });
-        this.pole2FactorControl = this.iceControls.add(this, "pole2Factor", 0.0, 5.0);
+        this.pole2FactorControl = this.iceControls.add(this.temperatureMap, "pole2Factor", 0.0, 5.0);
         this.pole2FactorControl.onChange(value => {
             if (planet.genSettingsChanged != true) {
                 planet.renderTemperatureMap(this); planet.renderTextureMap(this); planet.renderNormalMap(this);
                 planet.genSettingsChanged = true;
             }
         });
-        this.heightFactorControl = this.iceControls.add(this, "heightFactor", 0.0, 10.0);
+        this.heightFactorControl = this.iceControls.add(this.temperatureMap, "heightFactor", 0.0, 10.0);
         this.heightFactorControl.onChange(value => {
             if (planet.genSettingsChanged != true) {
                 planet.renderTemperatureMap(this); planet.renderTextureMap(this); planet.renderNormalMap(this);
                 planet.genSettingsChanged = true;
             }
         });
-        this.icinessControl = this.iceControls.add(this, "iciness", -1.0, 1.0);
+        this.icinessControl = this.iceControls.add(this.temperatureMap, "iciness", -1.0, 1.0);
         this.icinessControl.onChange(value => {
             if (planet.genSettingsChanged != true) {
                 planet.renderTemperatureMap(this); planet.renderTextureMap(this); planet.renderNormalMap(this);

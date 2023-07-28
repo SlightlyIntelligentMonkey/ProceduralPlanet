@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import vertShader from 'shaders/normalMap.vert'
+import vertShader from 'shaders/texture.vert'
 import fragShader from 'shaders/normalMap.frag'
 import Map from 'views/Map.js'
 

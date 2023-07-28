@@ -1,7 +1,5 @@
 import * as THREE from 'three'
 import AbstractApplication from 'views/AbstractApplication'
-import shaderVert from 'shaders/custom.vert'
-import shaderFrag from 'shaders/custom.frag'
 import Planet from 'views/Planet'
 import RenderQueue from 'views/RenderQueue'
 

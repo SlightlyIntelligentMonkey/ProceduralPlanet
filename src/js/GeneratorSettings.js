@@ -1,6 +1,13 @@
 import seedrandom from 'seedrandom'
 
 class GeneratorSettings {
+    constructor() {
+        this.indexMapFunc;
+        this.colorMapFunc;
+        this.indexMapSetup = [this.setHeightMapSettings, this.setMoistureMapSettings];
+        this.colorMapSetup = [this.setBiomeMapSettings];
+    }
+
     //I would've liked to have made this a constructor and simply make a new object each time but that runs into issues
     //with the controls
     set(seedString, genData) {
